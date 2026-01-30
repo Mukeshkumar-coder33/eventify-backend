@@ -15,9 +15,32 @@ app.use(cors({
 }));
 app.use(express.json());
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.error('MongoDB connection error:', err));
+const connectDB = async () => {
+    try {
+        const conn = await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+        console.log(`MongoDB Connected: ${conn.connection.host}`);
+    } catch (err) {
+        console.error('MongoDB connection error:', err.message);
+        // Don't exit process if you want the server to keep trying or handle it gracefully
+    }
+};
+
+connectDB();
+
+mongoose.connection.on('error', err => {
+    console.error('Mongoose connection error:', err);
+});
+
+mongoose.connection.on('disconnected', () => {
+    console.warn('Mongoose disconnected');
+});
+
+mongoose.connection.on('reconnected', () => {
+    console.log('Mongoose reconnected');
+});
 
 const authRoutes = require('./routes/authRoutes');
 const personalEventRoutes = require('./routes/personalEventRoutes');
