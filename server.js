@@ -23,28 +23,23 @@ const allowedOrigins = [
     'http://localhost:5173',
     'http://localhost:5000'
 ];
-
 app.use(cors({
-    origin: function (origin, callback) {
-        // allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
+  origin: function (origin, callback) {
+    // allow non-browser requests
+    if (!origin) return callback(null, true);
 
-        // During development/debugging, you might want to allow more origins
-        // Check if it's one of the allowed ones OR a local network IP
-        const isAllowed = allowedOrigins.indexOf(origin) !== -1 ||
-            origin.startsWith('http://192.168.') ||
-            origin.startsWith('http://172.') ||
-            origin.startsWith('http://10.');
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
 
-        if (isAllowed) {
-            return callback(null, true);
-        } else {
-            console.warn(`Blocked CORS request from origin: ${origin}`);
-            return callback(new Error('Not allowed by CORS'), false);
-        }
-    },
-    credentials: true
+    console.warn(`Blocked CORS request from origin: ${origin}`);
+    return callback(new Error("Not allowed by CORS"));
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
 }));
+
 app.use(express.json());
 
 const connectDB = async () => {
