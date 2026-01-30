@@ -24,20 +24,20 @@ const allowedOrigins = [
     'http://localhost:5000'
 ];
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow non-browser requests
-    if (!origin) return callback(null, true);
+    origin: function (origin, callback) {
+        // allow non-browser requests
+        if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
+        if (allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        }
 
-    console.warn(`Blocked CORS request from origin: ${origin}`);
-    return callback(new Error("Not allowed by CORS"));
-  },
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+        console.warn(`Blocked CORS request from origin: ${origin}`);
+        return callback(new Error("Not allowed by CORS"));
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 }));
 
 app.use(express.json());
@@ -89,6 +89,14 @@ app.listen(PORT, () => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    console.error('--- UNHANDLED ERROR ---');
+    console.error('Message:', err.message);
+    console.error('Stack:', err.stack);
+    console.error('-----------------------');
+
+    res.status(err.status || 500).json({
+        message: 'Internal Server Error',
+        error: err.message,
+        path: req.path
+    });
 });
