@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 5000;
 
 // Update CORS to allow your Vercel frontend
 app.use(cors({
-    origin: ['https://eventify-frontend-eight.vercel.app', 'http://localhost:5173'],
+    origin: ['https://eventify-frontend-eight.vercel.app'],
     credentials: true
 }));
 app.use(express.json());
