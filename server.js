@@ -5,6 +5,10 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+    console.warn('WARNING: JWT_SECRET is not defined in environment variables');
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
