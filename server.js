@@ -90,6 +90,21 @@ app.get('/', (req, res) => {
     res.send('Eventify API is running');
 });
 
+app.get('/health', (req, res) => {
+    const status = mongoose.connection.readyState;
+    const states = {
+        0: 'disconnected',
+        1: 'connected',
+        2: 'connecting',
+        3: 'disconnecting'
+    };
+    res.json({
+        status: states[status] || 'unknown',
+        mongoConnected: status === 1,
+        timestamp: new Date().toISOString()
+    });
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
