@@ -12,9 +12,37 @@ if (!process.env.JWT_SECRET) {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Update CORS to allow your Vercel frontend
+// Middleware to log requests (helpful for debugging other devices)
+app.use((req, res, next) => {
+    console.log(`${new Date().toISOString()} - ${req.method} ${req.path} - Origin: ${req.get('origin')}`);
+    next();
+});
+
+const allowedOrigins = [
+    'https://eventify-frontend-eight.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:5000'
+];
+
 app.use(cors({
-    origin: ['https://eventify-frontend-eight.vercel.app'],
+    origin: function (origin, callback) {
+        // allow requests with no origin (like mobile apps or curl requests)
+        if (!origin) return callback(null, true);
+
+        // During development/debugging, you might want to allow more origins
+        // Check if it's one of the allowed ones OR a local network IP
+        const isAllowed = allowedOrigins.indexOf(origin) !== -1 ||
+            origin.startsWith('http://192.168.') ||
+            origin.startsWith('http://172.') ||
+            origin.startsWith('http://10.');
+
+        if (isAllowed) {
+            return callback(null, true);
+        } else {
+            console.warn(`Blocked CORS request from origin: ${origin}`);
+            return callback(new Error('Not allowed by CORS'), false);
+        }
+    },
     credentials: true
 }));
 app.use(express.json());
