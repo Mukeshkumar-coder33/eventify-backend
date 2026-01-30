@@ -5,6 +5,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+if (!process.env.MONGO_URI) {
+    console.error('CRITICAL ERROR: MONGO_URI is not defined in environment variables!');
+} else {
+    const dbName = process.env.MONGO_URI.split('/').pop().split('?')[0];
+    console.log(`MONGO_URI is defined. Attempting to connect to database: ${dbName}`);
+}
+
 if (!process.env.JWT_SECRET) {
     console.warn('WARNING: JWT_SECRET is not defined in environment variables');
 }
