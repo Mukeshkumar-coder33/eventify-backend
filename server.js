@@ -8,7 +8,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.use(cors());
+// Update CORS to allow your Vercel frontend
+app.use(cors({
+    origin: ['https://eventify-frontend-eight.vercel.app', 'http://localhost:5173'],
+    credentials: true
+}));
 app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
